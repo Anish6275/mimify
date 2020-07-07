@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css?family=Baloo+Thambi+2:800&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat';
+  background: #fff;
+  color: #000;
+}
+
+.live {
+  height: 120px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  overflow-x: scroll;
+  padding: 30px 0 0 20px;
+  margin-bottom: 20px;
+}
+
+.live .person {
+  position: relative;
+  margin-right: 30px;
+  text-align: center;
+}
+
+.live .profile-pic {
+  position: relative;
+  background-position: 50%;
+  background-size: cover;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+.live .profile-pic img{
+  background-size: cover;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+/* 
+.live .person:nth-child(1) .profile-pic {background-image: url('https://randomuser.me/api/portraits/men/22.jpg');}
+.live .person:nth-child(2) .profile-pic {background-image: url('https://randomuser.me/api/portraits/women/22.jpg');}
+.live .person:nth-child(3) .profile-pic {background-image: url('https://randomuser.me/api/portraits/men/32.jpg');}
+.live .person:nth-child(4) .profile-pic {background-image: url('https://randomuser.me/api/portraits/men/62.jpg');}
+.live .person:nth-child(5) .profile-pic {background-image: url('https://randomuser.me/api/portraits/women/27.jpg');}
+.live .person:nth-child(6) .profile-pic {background-image: url('https://randomuser.me/api/portraits/men/82.jpg');}
+.live .person:nth-child(7) .profile-pic {background-image: url('https://randomuser.me/api/portraits/men/21.jpg');}
+.live .person:nth-child(8) .profile-pic {background-image: url('https://randomuser.me/api/portraits/women/42.jpg');} */
+
+.live .profile-pic::before {
+  content: '';
+  display: inline-block;
+  border: 3px solid #454D5A;
+  padding: 24px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.live .person .name {
+  font-size: 12px;
+  padding-top: 20px;
+}
+
+.active1 .profile-pic:before {
+  border-color: #bd3f32 !important;
+}
+.active2 .profile-pic:before {
+  border-color: #5b86e5 !important;  
+}
+.active3 .profile-pic:before {
+  border-color: #45a247 !important;
+}
+.active4 .profile-pic:before {
+  border-color: #007991 !important;
+}
+.active5 .profile-pic:before {
+  border-color: #f2c94c !important;
+}
+
+.live-active span {
+  color: rgb(255, 250, 250);
+  width: 50px;
+  display: inline-block;
+  font-size: 10px;
+  border-radius: 50px;
+  padding: 2px 0;
+  font-weight: 600;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.live .person:nth-child(1) span {background: linear-gradient(to right, #cb356b, #bd3f32);}
+.live .person:nth-child(2) span {background: linear-gradient(to right, #36d1dc, #5b86e5);}
+.live .person:nth-child(3) span {background: linear-gradient(to right, #283c86, #45a247);}
+.live .person:nth-child(4) span {background: linear-gradient(to right, #007991, #78ffd6);}
+.live .person:nth-child(5) span {background: linear-gradient(to right, #f2994a, #f2c94c);}
+.live .person:nth-child(6) span {background: #bd3f32;}
+.live .person:nth-child(7) span {background: #5b86e5;}
+.live .person:nth-child(8) span {background: #45a247;}
+.live .person:nth-child(9) span {background: #007991;}
+.live .person:nth-child(10) span {background: #f2994a;}
+
+
+.live-active i {
+  padding-right: 3px;
+}
+
+.newsfeed {
+  padding: 0 20px;
+}
+
+.cardd {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 0 12px 2px rgba(0, 0, 0, .5);
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.cardd .picture {  
+  background-position: 50%;
+  background-size: cover;
+  height: auto;
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.cardd .content {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 10px;
+}
+
+.cardd .header {
+  display: flex;
+  align-items: center;
+}
+
+.cardd .profile-pic{
+  background-position: 50%;
+  background-size: cover;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.cardd .detail {
+  margin-left: 10px;
+}
+
+.cardd .posted {
+  font-size: 10px;
+  padding-top: 3px;
+}
+
+.cardd .desc {
+  padding-top: 10px;
+  line-height: 1.5;
+}
+
+.cardd .tags {
+  font-size: 12px;
+  color: #005df9;
+  padding: 10px;
+}
+.card .footer {
+  display: flex;
+  font-size: 15px;
+  justify-content: space-between;
+}
+
+.card .footer .like {
+  color: red;
+  padding-bottom: 7px;
+  margin-left: 10%;
+}
+
+.card .footer .activator {
+  margin-right: 10%;
+}
+
+.card .footer .share {
+  color: blue;
+  flex: 0 0 18%;
+}
+.cardd .footer i {
+  padding-right: 3px;
+}
+
+.nav {
+  background: #fff;
+  height: 70px;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  box-shadow: 0 -4px 25px 0 rgba(0, 0, 0, .12);
+}
+
+.nav .icon {
+  flex: 0;
+  text-align: center;
+  color: #8E919A;
+}
+
+.nav .icon i {
+  padding-bottom: 10px;
+  font-size: 20px;
+}
+
+.nav .icon p {
+  font-size: 12px;
+}
+
+.active {
+  color: #F56565 !important;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.space {
+  height: 90px;
+}

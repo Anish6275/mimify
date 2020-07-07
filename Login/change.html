@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>mimify - Change Password</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-signin-client_id"
+        content="838213686426-ji9s9q5htg61qbqd93no300f31ou6qd7.apps.googleusercontent.com">
+    <meta name="keywords" content="social,media,mimify,memes,fun,laugh,login,password,forgot,forget,change">
+	<meta name="description" content="A Social Media Platform To Share Memes">
+	<meta name="author" content="Anish Roy">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    <link rel="icon" type="image/png" href="logo.ico" />
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="https://kit.fontawesome.com/9f37ddf547.js"></script>
+    <style>img[alt="www.000webhost.com"]{display: none;}</style>
+</head>
+
+<body>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <form class="login100-form validate-form">
+                    <span class="login100-form-title p-b-34">mimify</span>
+                    <span class="login100-form-titleN p-b-34">Change Password</span>
+                    <div id="phase1" style="margin: auto;" class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <div class="phase2 wrap-input100 rs1-wrap-input100 validate-input m-b-20">
+                        <input id="pass" name="pass" type="password" value="" id="first-name" class="input100"
+                            placeholder="New Password">
+                        <span id="h-pass" class="focus-input100"></span>
+                    </div>
+                    <div class="phase2 wrap-input100 rs2-wrap-input100 validate-input m-b-20">
+                        <input id="cpass" name="cpass" type="password" value="" class="input100"
+                            placeholder="Confirm Password">
+                        <span id="h-cpass" class="focus-input100"></span>
+                    </div>
+                    <div class="phase2 container-login100-form-btn">
+                        <button id="change" class="login100-form-btn" disabled>Change Password</button>
+                    </div>
+                    <br>
+                    <div class="phase2 w-full text-center">
+                        <a href="https://mimify.ml/Login" class="txt3">
+                            Sign In
+                        </a>
+                    </div>
+                </form>
+                <button class="phase2" style="font-size: 18px; color: red; margin-right: 10px; margin-bottom: 10px;" onclick="signOut()"><i class="fab fa-google"></i>&nbsp;&nbsp;Select other Gmail</button>
+                <div class="login100-more" style="background-image: url('images/bg-01.jpg');"></div>
+            </div>
+        </div>
+    </div>
+    <div id="dropDownSelect1"></div>
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/select2/select2.min.js"></script>
+    <script>
+        $('.phase2').hide();
+        var gid;
+        $("#pass").keyup(function () {
+            if ($('#pass').val().length < 6) {
+                $('#h-pass').html("<i class='far fa-times-circle'>&nbsp;&nbsp;atleast 6 characters!");
+                $("#h-pass").css("color", "red");
+                $("#change").attr("disabled");
+            } else {
+                $('#h-pass').html("<i class='far fa-check-circle'>&nbsp;&nbsp;accepted!");
+                $("#h-pass").css("color", "green");
+                $("#change").removeAttr("disabled");
+            }
+        });
+        $("#cpass").keyup(function () {
+            if ($('#pass').val() != $('#cpass').val()) {
+                $('#h-cpass').html("<i class='far fa-times-circle'>&nbsp;&nbsp;Not matching!");
+                $("#h-cpass").css("color", "red");
+                $("#change").attr("disabled");
+            } else {
+                $('#h-cpass').html("<i class='far fa-check-circle'>&nbsp;&nbsp;Matched!");
+                $("#h-cpass").css("color", "green");
+                $("#change").removeAttr("disabled");
+            }
+        });
+
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            gid = profile.getId();
+            //signOut();
+            $.ajax({
+                url: "validate.php",
+                type: "POST",
+                data: { id: gid },
+                success: function (msg) {
+                    if (msg == "true") {
+                        $('.phase2').show();
+                        $('#phase1').hide();
+                    } else {
+                        signOut();
+                        alert("This Gmail is not registered on mimify!!");
+                        signOut();
+                        window.location('https://mimify.ml/Login/change.html');
+                    }
+                }
+            });
+        }
+
+        $('#change').click(function () {
+            var pas = $('#pass').val();
+            $.ajax({
+                url: "change.php",
+                type: "POST",
+                data: { id: gid, pass: pas },
+                success: function (msg) {
+                    if (msg == "true") {
+                        signOut();
+                        alert("Password Successfully Changed!!");
+                        window.location("https://mimify.ml/Login");
+                    } else {
+                        signOut();
+                        alert("Some error occured!!");
+                        location.reload();
+                    }
+                }
+            });
+        });
+
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                $('.phase2').hide();
+                $('#phase1').show();
+                
+            });
+        }
+
+        $(".selection-2").select2({
+            minimumResultsForSearch: 20,
+            dropdownParent: $('#dropDownSelect1')
+        });
+    </script>
+    <script src="vendor/daterangepicker/moment.min.js"></script>
+    <script src="vendor/daterangepicker/daterangepicker.js"></script>
+    <script src="vendor/countdowntime/countdowntime.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
