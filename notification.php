@@ -1,9 +1,10 @@
 <?php    
     session_start();
-    if(isset($_SESSION['user'])){
+    if((isset($_SESSION['user'])) && (isset($_SESSION['logsession']))){
 		include 'dbManager.php';
-        $uid = $_SESSION['user'];   
-        $sql = "SELECT user.image, user.name, notification.what, notification.when, CURRENT_TIMESTAMP, notification.where FROM notification, user WHERE notification.whome LIKE '{$uid}' AND user.uid = notification.where ORDER BY notification.slno DESC LIMIT 16;";  
+        $uid = $_SESSION['user'];
+        $log = $_SESSION['logsession'];  
+        $sql = "SELECT notification.slno, user.image, user.name, notification.what, notification.when, CURRENT_TIMESTAMP, notification.where FROM notification, user WHERE notification.whome LIKE '{$uid}' AND user.uid = notification.where ORDER BY notification.slno DESC LIMIT 16;";  
         $result = mysqli_query($conn, $sql);  
         mysqli_close($conn);
     }else{
@@ -28,7 +29,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <title>mimify - Notification</title>
     <style>img[alt="www.000webhost.com"] {display: none;}
-            a{color: #718096;}</style>
+            a{color: #718096;}
+            .noti{ position: relative;}
+            .noti .cl{
+                position: absolute;
+                top: 45%;
+                left: 90%;
+                transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+    </style>
 </head>
 <body>
     <header class="body-font">
@@ -45,29 +54,29 @@
         <?php 
             if ($result->num_rows > 0){
                 while($res = mysqli_fetch_array($result)){ ?>
-                <a href="profile.php?id=<?php echo $res[5]; ?>">
-                    <div class="flex flex-wrap sm:-m-4 -mx-4 -mb-10 -mt-4">
+                <a href="profile.php?id=<?php echo $res[6]; ?>">
+                    <div class="noti flex flex-wrap sm:-m-4 -mx-4 -mb-10 -mt-4" data-id="<?php echo $res[0]; ?>" id="d<?php echo $res[0]; ?>">
                         <div class="p-4 md:w-1/3 md:mb-0 mb-6 flex">
                             <div
                                 class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4 flex-shrink-0">
-                                <img alt="blog" src="<?php echo $res[0]; ?>"
+                                <img alt="blog" src="<?php echo $res[1]; ?>"
                                     class="w-12 h-12 rounded-full flex-shrink-0 object-cover object-center" style="margin-top: 16px;">
                             </div>
                             <div class="flex-grow pl-6">
                                 <h2 class="text-gray-900 text-lg title-font font-medium mb-2" style="margin-bottom: 0; margin-top: 6px;"><?php 
-                                                if($res[5] == $uid){
+                                                if($res[6] == $uid){
                                                     echo 'You';
                                                 }else{
-                                                    echo $res[1];                    
+                                                    echo $res[2];                    
                                                 }
                                             ?>
                                                 
                                 </h2>
-                                <p class="leading-relaxed text-gray-600"><?php echo $res[2]; ?></p>
+                                <p class="leading-relaxed text-gray-600"><?php echo $res[3]; ?></p>
                                 <a class="mt-3 text-red-500 inline-flex items-center" style="margin: 0;">
                                 <?php 
-                                        $date1 = strtotime($res[3]); 
-                                        $date2 = strtotime($res[4]);   
+                                        $date1 = strtotime($res[4]); 
+                                        $date2 = strtotime($res[5]);   
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -85,15 +94,16 @@
                                             echo "Just Now"; 
                                 ?>
                                 </a>
+                                <button onclick="f(<?php echo $res[0]; ?>)" id="c<?php echo $res[0]; ?>" style="display: none;" class="cl bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+                          Clear
+                        </button>
                             </div>
                         </div>
+                        
                     </div>
                 </a>
         <?php   }
             }else{ ?>
-
-
-
 
             <?php } ?>
         </div>
@@ -131,5 +141,37 @@
     <div class="space"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script>
     <script src="assets/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//rawgit.com/ngryman/jquery.finger/v0.1.2/dist/jquery.finger.js"></script>
+    <script>
+        function f(slno){
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $('#d' + slno).hide();
+                        $.ajax({
+    				        url:"backend/delNotification.php",
+    				        type: "POST",
+    				        data:{id: slno},
+                            success:function(data){}
+                        });
+                    }else{
+                        alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+                    }
+                }
+            });
+        }
+        $('.noti').on('press', function (ev) {
+            ev.preventDefault();
+            var id = $(this).attr('data-id');
+            $('.cl').hide();
+            $('#c' + id).show();
+        });
+    </script>
 </body>
 </html>

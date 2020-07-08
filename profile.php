@@ -1,8 +1,9 @@
 <?php    
     session_start();
-    if(isset($_SESSION['user'])){
+    if((isset($_SESSION['user'])) && (isset($_SESSION['logsession']))){
 		include 'dbManager.php';
-		$uid = $_SESSION['user'];
+        $uid = $_SESSION['user'];
+        $log = $_SESSION['logsession'];
 		$id= $uid;
 		if (isset($_GET['id'])) {
 			$id=$_GET['id'];
@@ -229,9 +230,7 @@
                     </div>
                 </div>
             </div>
-            
-            <?php /*$finalId = $res[0]; */ } ?>
-
+            <?php } ?>
     </section>
 </section>
 <br><br><br><br>
@@ -260,10 +259,19 @@
 				<p>Notifications</p>
 			</div>
 		</a>
+		<?php if($uid == $id){?>
 		<div class="icon active">
 			<i class="fas fa-user"></i>
 			<p>Profile</p>
 		</div>
+		<?php }else{ ?>
+		<a href="profile.php">
+			<div class="icon active">
+				<i class="fas fa-user"></i>
+				<p>Notifications</p>
+			</div>
+		</a>
+		<?php } ?>
 	</section>
 
 
@@ -279,92 +287,180 @@
 	<script src="assets/common-js/scripts.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 	<script type="text/javascript">
+
 	
+
 	    function like(id , uid){
-            $("#li"+id).attr("onclick", "dislike('"+id+"' , '"+uid+"')");
-            $("#li"+id).html("<i class='fas fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))+1)+"</span>");
-            console.log("liked");
             $.ajax({
-            	url:"profile/like.php",
-            	type: "POST",
-            	data:{id: id, uid: uid},
-                success:function(data){}
-            });
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#li"+id).attr("onclick", "dislike('"+id+"' , '"+uid+"')");
+                        $("#li"+id).html("<i class='fas fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))+1)+"</span>");
+                        $.ajax({
+                        	url:"profile/like.php",
+                        	type: "POST",
+                        	data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
+        	});
         }
         function dislike(id , uid){
-            $("#li"+id).attr("onclick", "like('"+id+"' , '"+uid+"')");
-            $("#li"+id).html("<i class='far fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))-1)+"</span>");
-            console.log("disliked");
             $.ajax({
-				url:"profile/dislike.php",
-				type: "POST",
-				data:{id: id, uid: uid},
-                success:function(data){}
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#li"+id).attr("onclick", "like('"+id+"' , '"+uid+"')");
+                        $("#li"+id).html("<i class='far fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))-1)+"</span>");
+                        $.ajax({
+    				        url:"profile/dislike.php",
+    				        type: "POST",
+    				        data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+                    }else{
+                        alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+                    }
+                }
             });
         }
+
         
+
 		$('#editBox').hide();
+
 		$(document).ready(function(){
+
 		    $('#edit').click(function() {
+
 		        $('#editBox').show();
+
                 $('#pos').hide();
+
                 $('#pro').hide();
+
             });
+
             $('.edClose').click(function() {
+
                 $('#pos').show();
+
                 $('#pro').show();
+
                 $('#editBox').hide();
+
+            });
+
+		});
+
+		
+
+		$("#fo").click(function(){
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+                        $.ajax({
+            				url:"profile/follow.php",
+            				type: "POST",
+            				data:{id: "<?php echo $id; ?>", uid: "<?php echo $uid; ?>"},
+            				success:function(data){
+            					$('#fo').html(data);
+            					if(data == "FOLLOWED"){
+            						$('#s').text(parseInt($('#s').text())+1);
+            					}else{
+            						$('#s').text(parseInt($('#s').text())-1);
+                                }
+            				}
+            
+            			});
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
             });
 		});
+
 		
-		$("#fo").click(function(){
-            // console.log("follow");
-            $.ajax({
-				url:"profile/follow.php",
-				type: "POST",
-				data:{id: "<?php echo $id; ?>", uid: "<?php echo $uid; ?>"},
-				success:function(data){
-					$('#fo').html(data);
-				// 	console.log(data); 
-					if(data == "FOLLOWED")
-						$('#s').text(parseInt($('#s').text())+1);
-					else
-						$('#s').text(parseInt($('#s').text())-1);
-				}
-			});
-    	   
-        });
-		
+
     </script>
+
 </body>
 
+
+
 </html>
+
 <?php if($uid == $id){ ?>
+
     <div id="uploadimageModal" class="modal" role="dialog">
+
     	<div class="modal-dialog">
+
     		<div class="modal-content">
+
           		<div class="modal-header">
+
             		<button type="button" class="close" data-dismiss="modal">&times;</button>
+
             		<h4 class="modal-title">Upload & Crop Image</h4>
+
           		</div>
+
           		<div class="modal-body">
+
             		<div class="row">
+
       					<div class="col-md-8 text-center">
+
     						  <div id="image_demo" style="width:350px; margin-top:30px"></div>
+
       					</div>
+
       					<div class="col-md-4" style="padding-top:30px;">
+
       						<br />
+
       						<br />
+
       						<br/>
+
     						  <button class="btn btn-success crop_image">Crop & Upload Image</button>
+
     					</div>
+
     				</div>
+
           		</div>
+
           		<div class="modal-footer">
+
             		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
           		</div>
+
         	</div>
+
         </div>
+
     </div>
 
-<?php } ?>
+
+
+<?php } ?>

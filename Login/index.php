@@ -34,8 +34,6 @@
 					<span class="login100-form-titleN p-b-34">
 							Login
 						</span>
-						
-					
 					<div class="wrap-input100 rs1-wrap-input100 validate-input m-b-20" data-validate="Type user name">
 						<input name="member_name" type="text" value="<?php if(isset($_COOKIE["member_login"])) { echo $_COOKIE["member_login"]; } ?>"id="first-name" class="input100" placeholder="User name">
 						<span class="focus-input100"></span>

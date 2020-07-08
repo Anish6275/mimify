@@ -14,19 +14,25 @@
         if ($result->num_rows > 0)
 				$row = $result->fetch_assoc();
         if($name === $row['uid'] && password_verify($password, $row['pass'])){
-            if(!empty($_POST["remember"])){  
-                setcookie ("member_login",$name,time()+ (10 * 365 * 24 * 60 * 60));  
-                setcookie ("member_password",$password,time()+ (10 * 365 * 24 * 60 * 60));
-                $_SESSION["user"] = $name;
-            }else{  
-                $_SESSION["user"] = $name;
-                if(isset($_COOKIE["member_login"])){ 
-                    setcookie ("member_login","");  
-                }  
-                if(isset($_COOKIE["member_password"])){
-                    setcookie ("member_password","");  
-                }  
-            }  
+            $log = uniqid();
+            $sql = "UPDATE `log` SET `logsession` = '{$log}' WHERE `uid` LIKE '{$row['uid']}'";  
+            if(mysqli_query($conn,$sql)){
+                if(!empty($_POST["remember"])){  
+                    setcookie ("member_login",$name,time()+ (10 * 365 * 24 * 60 * 60));  
+                    setcookie ("member_password",$password,time()+ (10 * 365 * 24 * 60 * 60));
+                    $_SESSION["user"] = $row['uid'];
+                    $_SESSION["logsession"] = $log;
+                }else{  
+                    $_SESSION["user"] = $row['uid'];
+                    $_SESSION["logsession"] = $log;
+                    if(isset($_COOKIE["member_login"])){ 
+                        setcookie ("member_login","");  
+                    }  
+                    if(isset($_COOKIE["member_password"])){
+                        setcookie ("member_password","");  
+                    }  
+                }
+            }
             mysqli_close($conn);
             header("location: https://mimify.ml/index.php"); 
         }else{  

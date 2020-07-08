@@ -6,4 +6,5 @@
         mysqli_query($conn, $sql);
     }
     echo $post;
+    mysqli_close($conn);
 ?>

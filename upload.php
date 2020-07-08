@@ -1,8 +1,9 @@
 <?php    
     session_start();
-    if(isset($_SESSION['user'])){
+    if((isset($_SESSION['user'])) && (isset($_SESSION['logsession']))){
 		include 'dbManager.php';
-		$uid = $_SESSION['user'];
+        $uid = $_SESSION['user'];
+        $log = $_SESSION['logsession'];
     }else{
         header("Location: https://mimify.ml/Login/");
     }
@@ -152,16 +153,30 @@
         });
         $('.btn').hide();
         function deletePost(id){
-            if(confirm('Are you sure you want to delete this Post?')){
-                $.ajax({
-                    url: "backend/deletePost.php",
-                    type: "POST",
-                    data: { id: id , uid: '<?php echo $uid; ?>'},
-                    success: function (data) {
-                        $('#div' + id).hide();
-                    }
-                });
-            }
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    if(confirm('Are you sure you want to delete this Post?')){
+                            $.ajax({
+                                url: "backend/deletePost.php",
+                                type: "POST",
+                                data: { id: id , uid: '<?php echo $uid; ?>'},
+                                success: function (data) {
+                                    $('#div' + id).hide();
+                                }
+                            });
+                        }
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
+        	});
+            
         }
         function show(id) {
             $('.btn').hide();

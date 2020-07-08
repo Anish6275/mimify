@@ -1,7 +1,8 @@
 <?php    
     session_start();
-    if(isset($_SESSION['user'])){
-        $uid = $_SESSION['user'];
+    if((isset($_SESSION['user'])) && (isset($_SESSION['logsession']))){
+		$uid = $_SESSION['user'];
+        $log = $_SESSION['logsession'];
         $toTag = false;
 		if (isset($_GET['tag'])) {
 		    $toTag = true;
@@ -278,7 +279,6 @@
                                 $('#userList').append(sUser[i+1]);
                             }
                         }
-
                     }                    
                 }else{
                     $('#userList').html("");
@@ -312,32 +312,56 @@
                                 $('#tagList').append(sTag[i+1]);
                             }
                         }
-
                     }                    
                 }else{
                     $('#tagList').html("");
                 }
             }
         });
-         function like(id , uid){
-            $("#li"+id).attr("onclick", "dislike('"+id+"' , '"+uid+"')");
-            $("#li"+id).html("<i class='fas fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))+1)+"</span>");
+        function like(id , uid){
             $.ajax({
-            	url:"profile/like.php",
-            	type: "POST",
-            	data:{id: id, uid: uid},
-                success:function(data){}
-            });
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#li"+id).attr("onclick", "dislike('"+id+"' , '"+uid+"')");
+                        $("#li"+id).html("<i class='fas fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))+1)+"</span>");
+                        $.ajax({
+                        	url:"profile/like.php",
+                        	type: "POST",
+                        	data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
+        	});
         }
-
         function dislike(id , uid){
-            $("#li"+id).attr("onclick", "like('"+id+"' , '"+uid+"')");
-            $("#li"+id).html("<i class='far fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))-1)+"</span>");
             $.ajax({
-				url:"profile/dislike.php",
-				type: "POST",
-				data:{id: id, uid: uid},
-                success:function(data){}
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#li"+id).attr("onclick", "like('"+id+"' , '"+uid+"')");
+                        $("#li"+id).html("<i class='far fa-heart'></i><span id='s"+id+"'>"+((parseInt($('#s'+id).text()))-1)+"</span>");
+                        $.ajax({
+    				        url:"profile/dislike.php",
+    				        type: "POST",
+    				        data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+                    }else{
+                        alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+                    }
+                }
             });
         }
 
