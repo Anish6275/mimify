@@ -71,7 +71,32 @@
 	<link href="assets/common-css/fluidbox.min.css" rel="stylesheet">
 	<link href="assets/01-cv-portfolio/css/styles.css" rel="stylesheet">
 	<link href="assets/01-cv-portfolio/css/responsive.css" rel="stylesheet">
-	<style>img[alt="www.000webhost.com"] {display: none;}</style>
+	<style>img[alt="www.000webhost.com"]{display: none;}
+        .content .save {
+            position: absolute;
+            right: 5%;
+            top: 6%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            color: #f56565;
+            font-size: 22px;
+        }
+        .card .rater {
+            display: flex;
+            font-size: 15px;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        .card .rater .rates{
+            height:35px;
+            width:35px;
+            color:white;
+            text-align: center;
+            border-radius:50%;
+            padding-top: 1.5%;
+            background-color: #f56565;
+        }
+    </style>
 </head>
 <body>
 	<div class="container mx-auto flex flex-wrap p-3 flex-col md:flex-row items-center">
@@ -80,7 +105,10 @@
 			<span class="ml-3 text-xl">mimify</span>
 		</a>
 	</div>
-
+	<?php if($uid==$id){ ?>
+        <div id="logout" onclick="window.location='backend/logout.php'" style="position: absolute;font-size: 28px;top: 2.5%;color: #f56565;left: 89%;">
+            <i class="fas fa-sign-out-alt"></i></div>
+    <?php } ?>
 	<section class="intro-section" id="pro">
 		<div class="container">
 			<div class="row">
@@ -98,11 +126,11 @@
 						<ul class="information margin-tb-30" id="t"><?php echo $row['status']; ?></ul>
 						<a class="downlad-btnn" href="#"><span id="s"><?php echo $rowf['count(uid)'] ?></span> subscriber</a>
 						<a class="downlad-btnn" href="#"><span><?php echo $following; ?></span> followings</a>
-					</div><!-- intro -->
-				</div><!-- col-sm-8 -->
-			</div><!-- row -->
-		</div><!-- container -->
-	</section><!-- intro-section -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 <?php if($uid==$id){ ?>
         <section class="text-gray-700 body-font relative" id="editBox">
 		<form action="profile/updateUser.php" method="POST" enctype="multipart/form-data">
@@ -145,28 +173,43 @@
 	</script>
 <?php } ?>
 <section class="portfolio-section section" id='pos'>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-4">
-				<div class="heading">
-					<h3><b>Posts</b></h3>
-					<h6 class="font-lite-black"><b>My Posts</b></h6>
+    <div class="container">
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="heading">
+						<h3><b>Posts</b></h3>
+						<div class="portfolioFilter clearfix margin-b-80">
+						    <a id="mpbtn" style="color: #f56565;"><b>My Posts</b></a>
+						   <?php if($uid==$id){ ?>
+						    <a id="spbtn"><b>Saved</b></a>
+						   <?php } ?>
+					    </div>
+					</div>
+				</div>
+				<div class="col-sm-8">
+					
 				</div>
 			</div>
 		</div>
-	</div>
 	<?php
 	    $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `uid` LIKE '" . $id . "' ORDER BY `id` DESC;";    
         $result = mysqli_query($conn, $sql);
         mysqli_close($conn);
 	?>
-	<section class="newsfeed" id="newsfeed">
+	<section class="newsfeed mp" id="newsfeed">
         <?php while($res = mysqli_fetch_array($result)){ ?>
         
             <div id="a<?php echo $res[0]; ?>" class="card N/A transparent">
                 <div class="cardd">
                     <img src="<?php echo $res[1]; ?>" class="picture">
                     <div class="content">
+                    <?php if($uid!=$id){ ?>
+                        <?php if(strpos($res[13], $uid) !== false){ ?>
+                            <div class="save" id="sa<?php echo $res[0]; ?>" onclick="unsave('<?php echo $res[0] . "' , '" . $uid; ?>')"><i class="fas fa-bookmark"></i></div>
+                        <?php }else{ ?>
+                            <div class="save" id="sa<?php echo $res[0]; ?>" onclick="save('<?php echo $res[0] . "' , '" . $uid; ?>')"><i class="far fa-bookmark"></i></div>
+                        <?php } ?>
+                    <?php } ?>
                         <a style="color: black;" href="<?php echo "https://mimify.ml/profile.php?id=". $res[3]; ?>"
                             class="header">
                             <div class="profile-pic" style="background-image: url('<?php echo $res[5]; ?>');">
@@ -175,7 +218,7 @@
                                 <p class="name"><?php echo $res[4]; ?></p>
                                 <p class="posted"><?php 
                                         $date1 = strtotime($res[6]);  
-                                        $date2 = strtotime($res[13]);   
+                                        $date2 = strtotime($res[14]);   
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -222,16 +265,157 @@
                                 <span id="s<?php echo $res[0]; ?>"><?php echo $res[9]; ?></span>
                             </div>
                             <?php } ?>
-                            <a href="<?php echo $res[2]; ?>" download class="activator" style="color: #075e54;">
+                            <a href="<?php echo $res[2]; ?>" download class="activator" style="margin-right: 0%;color: #075e54;">
                                <i class="fas fa-cloud-download-alt"></i>
                                 <span>Download</span>
                             </a>
+                            <?php if(strpos($res[12], $uid) !== false){ ?>
+                                <div class="rate" style="padding-right: 10%; color: indigo;">
+                                    <i class="fas fa-star"></i><span>Rated</span>
+                                </div>
+                            <?php }else{?>
+                                <div class="rate" id="rate<?php echo $res[0]; ?>" style="padding-right: 10%; color: indigo;" onclick="rateOpen(<?php echo $res[0]; ?>)">
+                                    <i class="far fa-star"></i><span>Rate</span>
+                                </div>
+                            <?php } ?>
                         </div>
+                        <?php if(strpos($res[12], $uid) === false){ ?>
+                            <div class="rater" id="ra<?php echo $res[0]; ?>" style="display: none">
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 1)">
+                                    <span>1</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 2)">
+                                    <span>2</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 3)">
+                                    <span>3</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 4)">
+                                    <span>4</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 5)">
+                                    <span>5</span>
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
             <?php } ?>
     </section>
+    
+<?php if($uid==$id){ 
+    include 'dbManager.php';
+    $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `save` LIKE '%{$uid}%' ORDER BY `id` DESC;";    
+    $result = mysqli_query($conn, $sql);
+    mysqli_close($conn);
+?>
+    <section class="newsfeed sp" id="newsfeed" style="display: none;">
+        <?php while($res = mysqli_fetch_array($result)){ ?>
+        
+            <div id="a<?php echo $res[0]; ?>" class="card N/A transparent">
+                <div class="cardd">
+                    <img src="<?php echo $res[1]; ?>" class="picture">
+                    <div class="content">
+                        <?php if(strpos($res[13], $uid) !== false){ ?>
+                            <div class="save" id="sa<?php echo $res[0]; ?>" onclick="unsave('<?php echo $res[0] . "' , '" . $uid; ?>')"><i class="fas fa-bookmark"></i></div>
+                        <?php }else{ ?>
+                            <div class="save" id="sa<?php echo $res[0]; ?>" onclick="save('<?php echo $res[0] . "' , '" . $uid; ?>')"><i class="far fa-bookmark"></i></div>
+                        <?php } ?>
+                        <a style="color: black;" href="<?php echo "https://mimify.ml/profile.php?id=". $res[3]; ?>"
+                            class="header">
+                            <div class="profile-pic" style="background-image: url('<?php echo $res[5]; ?>');">
+                            </div>
+                            <div class="detail">
+                                <p class="name"><?php echo $res[4]; ?></p>
+                                <p class="posted"><?php 
+                                        $date1 = strtotime($res[6]);  
+                                        $date2 = strtotime($res[14]);   
+                                        $diff = abs($date2 - $date1);
+                                        $years = floor($diff / (365*60*60*24));  
+                                        $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
+                                        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
+                                        $hours = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24) / (60*60));  
+                                        $minutes = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60)/ 60);
+
+                                        $seconds = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60 - $minutes*60));  
+                                        if($days > 0){ 
+                                            echo $days ." day ago";
+                                        }else if($hours > 0){  
+                                            echo $hours . " hour ago";
+                                        }else if($minutes > 0){  
+                                            echo $minutes . " min ago";
+                                        }else
+                                            echo "Just Now";  ?></p>
+                            </div>
+                        </a>
+                        <div class="desc"><?php echo $res[8] ?></div>
+                        <div class="tags"><?php
+                                $tag = $res[7];
+                                $ctag = "";
+                                for($i = 0 ; $i < strlen($tag) ; $i++){
+                                    if(substr($tag , $i , 1) != " "){
+                                        $ctag .= substr($tag , $i , 1);     
+
+                                    }
+                                    if(substr($tag , $i , 1) == " " || $i == strlen($tag)-1){
+                                        echo "<a href='search.php?tag=".substr($ctag, 1)."'><span>{$ctag} </span></a>";
+                                        $ctag = "";
+                                    }    
+                                }
+                            ?>
+                        </div>
+                        <div class="footer">
+                            <?php if(strpos($res[10], $uid) !== false){ ?>
+                            <div class="like" id="li<?php echo $res[0]; ?>" onclick="dislike('<?php echo $res[0]."' , '". $uid ; ?>')">
+                                <i class="fas fa-heart"></i>
+                                <span id="s<?php echo $res[0]; ?>"><?php echo $res[9]; ?></span>
+                            </div>
+                            <?php }else{?>
+                            <div class="like" id="li<?php echo $res[0]; ?>" onclick="like('<?php echo $res[0] . "' , '" . $uid; ?>')">
+                                <i class="far fa-heart"></i>
+                                <span id="s<?php echo $res[0]; ?>"><?php echo $res[9]; ?></span>
+                            </div>
+                            <?php } ?>
+                            <a href="<?php echo $res[2]; ?>" download class="activator" style="margin-right: 0%;color: #075e54;">
+                               <i class="fas fa-cloud-download-alt"></i>
+                                <span>Download</span>
+                            </a>
+                            <?php if(strpos($res[12], $uid) !== false){ ?>
+                                <div class="rate" style="padding-right: 10%; color: indigo;">
+                                    <i class="fas fa-star"></i><span>Rated</span>
+                                </div>
+                            <?php }else{?>
+                                <div class="rate" id="rate<?php echo $res[0]; ?>" style="padding-right: 10%; color: indigo;" onclick="rateOpen(<?php echo $res[0]; ?>)">
+                                    <i class="far fa-star"></i><span>Rate</span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                        <?php if(strpos($res[12], $uid) === false){ ?>
+                            <div class="rater" id="ra<?php echo $res[0]; ?>" style="display: none">
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 1)">
+                                    <span>1</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 2)">
+                                    <span>2</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 3)">
+                                    <span>3</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 4)">
+                                    <span>4</span>
+                                </div>
+                                <div class="rates" onclick="rate(<?php echo $res[0]; ?> , 5)">
+                                    <span>5</span>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+    </section>
+<?php } ?>
 </section>
 <br><br><br><br>
 	<section class="nav">
@@ -287,9 +471,48 @@
 	<script src="assets/common-js/scripts.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 	<script type="text/javascript">
-
+        $('.sp').hide();
+        $('#spbtn').click(function(){
+            $('#mpbtn').removeAttr("style");
+            $('#spbtn').attr("style","color: #f56565;");
+            $('.sp').show();
+            $('.mp').hide();
+        });
+        $('#mpbtn').click(function(){
+            $('#spbtn').removeAttr("style");
+            $('#mpbtn').attr("style","color: #f56565;");
+            $('.sp').hide();
+            $('.mp').show();
+        });
 	
-
+        function rateOpen(id){
+            $('.rater').hide();
+            $('#ra' + id).show();
+        }
+        function rate(id , n){
+            $("#ra"+id).hide();
+            $("#rate"+id).removeAttr("onclick");
+            $("#rate"+id).html("<i class='fas fa-star'></i><span>Rated</span>");
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+                        $.ajax({
+            				url:"profile/rate.php",
+            				type: "POST",
+            				data:{id: id, n: n, uid: '<?php echo $uid; ?>'},
+                            success:function(data){}
+                        });
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
+            });
+        }
 	    function like(id , uid){
             $.ajax({
                 async: false,
@@ -337,7 +560,52 @@
             });
         }
 
-        
+        function save(id , uid){
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#sa"+id).attr("onclick", "unsave('"+id+"' , '"+uid+"')");
+                        $("#sa"+id).html("<i class='fas fa-bookmark'></i>");
+                        $.ajax({
+                        	url:"profile/save.php",
+                        	type: "POST",
+                        	data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+            		}else{
+            		    alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+            		}
+                }
+        	});
+        }
+        function unsave(id , uid){
+            $.ajax({
+                async: false,
+                url:"backend/logSessionAuthenticator.php",
+                type: "POST",
+                data:{logSession: '<?php echo $log; ?>', uid: '<?php echo $uid; ?>'},
+                success:function(data){
+            		if(data == "true"){
+            		    $("#sa"+id).attr("onclick", "save('"+id+"' , '"+uid+"')");
+                        $("#sa"+id).html("<i class='far fa-bookmark'></i>");
+                        $.ajax({
+    				        url:"profile/unsave.php",
+    				        type: "POST",
+    				        data:{id: id, uid: uid},
+                            success:function(data){}
+                        });
+                    }else{
+                        alert("You are already Signed in another device");
+                        window.location.replace("https://mimify.ml/Login");
+                    }
+                }
+            });
+        }
 
 		$('#editBox').hide();
 

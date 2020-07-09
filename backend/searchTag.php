@@ -28,6 +28,15 @@
         $post .= "|";
         $post .= "<div class='card N/A transparent'><div class='cardd'><img src='{$res[1]}' class='picture'>";
             $post .= "<div class='content'>";
+            // if(strpos($res[13], $uid) !== false){
+            //     $post .= "<div class='save' id='sa{$res[0]}'";
+            //     $post .= str_replace(' ', '', 'onclick="unsave('."'".$res[0]."','".$uid."'".')">');
+            //     $post .= "<i class='fas fa-bookmark'></i></div>";
+            // }else{
+            //     $post .= "<div class='save' id='sa{$res[0]}'";
+            //     $post .= str_replace(' ', '', 'onclick="save('."'".$res[0]."','".$uid."'".')">');
+            //     $post .= "<i class='far fa-bookmark'></i></div>";
+            // }
             $post .= "<a style='color: black;' href='https://mimify.ml/profile.php?id={$res[3]}' class='header'>";
             $post .= "<div class='profile-pic'";
             $g = true;
@@ -57,7 +66,7 @@
             $post .= "<p class='name'>{$res[4]}</p><p class='posted'>";
             
             $date1 = strtotime($res[6]);  
-            $date2 = strtotime($res[13]);   
+            $date2 = strtotime($res[14]);   
             $diff = abs($date2 - $date1);
             $years = floor($diff / (365*60*60*24));  
             $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -100,8 +109,25 @@
                 $post .= "<i class='far fa-heart'></i><span id='s{$res[0]}'>{$res[9]}</span></div>";
             }
             
-            $post .= "<a href='{$res[2]}' download class='activator' style='color: #075e54;'>";
-            $post .= "<i class='fas fa-cloud-download-alt'></i><span>Download</span></a></div></div></div></div>|";        
+            $post .= "<a href='{$res[2]}' download class='activator' style='margin-right: 0%; color: #075e54;'>";
+            $post .= "<i class='fas fa-cloud-download-alt'></i><span>Download</span></a>";
+            
+            if(strpos($res[12], $uid) !== false){
+                $post .= "<div class='rate' style='padding-right: 10%; color: indigo;'><i class='fas fa-star'></i><span>Rated</span></div>";
+            }else{
+                $post .= "<div class='rate' id='rate{$res[0]}' style='padding-right: 10%; color: indigo;' onclick='rateOpen({$res[0]})'><i class='far fa-star'></i><span>Rate</span></div>";
+            }
+            $post .= "</div>";
+            
+            if(strpos($res[12], $uid) === false){
+                $post .= "<div class='rater' id='ra{$res[0]}' style='display: none'>";
+                $post .= "<div class='rates' onclick='rate({$res[0]}, 1)'><span>1</span></div>";
+                $post .= "<div class='rates' onclick='rate({$res[0]}, 2)'><span>2</span></div>";
+                $post .= "<div class='rates' onclick='rate({$res[0]}, 3)'><span>3</span></div>";
+                $post .= "<div class='rates' onclick='rate({$res[0]}, 4)'><span>4</span></div>";
+                $post .= "<div class='rates' onclick='rate({$res[0]}, 5)'><span>5</span></div></div>";
+            }
+            $post .="</div></div></div>|";      
     }
     echo $post;
 ?>

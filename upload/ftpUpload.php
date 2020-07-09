@@ -59,9 +59,9 @@
 			  if ($result->num_rows > 0)
 			   	$row = $result->fetch_assoc();
               $sql = "INSERT INTO `post` 
-                            (`id`, `link`, `slink`, `uid`, `name`, `image`, `time`, `tag`, `des`, `likes`, `likeId`, `rate`, `rateId`) 
+                            (`id`, `link`, `slink`, `uid`, `name`, `image`, `time`, `tag`, `des`, `likes`, `likeId`, `rate`, `rateId`, `save`) 
                       VALUES 
-                            (NULL, '{$cdnSource}', '{$cdn2Source}', '{$uid}', '{$row['name']}' , '{$row['image']}', CURRENT_TIMESTAMP, '{$finalTag}', '{$des}', '0', '', '0', '');";                    
+                            (NULL, '{$cdnSource}', '{$cdn2Source}', '{$uid}', '{$row['name']}' , '{$row['image']}', CURRENT_TIMESTAMP, '{$finalTag}', '{$des}', '0', '', '0', '','');";                    
               if(mysqli_query($conn, $sql)){
                 mysqli_close($conn);  
                 $targetDir = "uploads/"; 
