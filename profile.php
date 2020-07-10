@@ -4,6 +4,10 @@
 		include 'dbManager.php';
         $uid = $_SESSION['user'];
         $log = $_SESSION['logsession'];
+        $mature = 0;
+        if(isset($_SESSION['mature'])){
+            $mature = $_SESSION['mature'];
+        } 
 		$id= $uid;
 		if (isset($_GET['id'])) {
 			$id=$_GET['id'];
@@ -192,7 +196,11 @@
 			</div>
 		</div>
 	<?php
-	    $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `uid` LIKE '" . $id . "' ORDER BY `id` DESC;";    
+	    if($mature == 0){
+	        $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `uid` LIKE '" . $id . "' AND `mature` = '0' ORDER BY `id` DESC;";
+	    }else{
+	        $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `uid` LIKE '" . $id . "' ORDER BY `id` DESC;";    
+	    }
         $result = mysqli_query($conn, $sql);
         mysqli_close($conn);
 	?>
@@ -218,7 +226,7 @@
                                 <p class="name"><?php echo $res[4]; ?></p>
                                 <p class="posted"><?php 
                                         $date1 = strtotime($res[6]);  
-                                        $date2 = strtotime($res[14]);   
+                                        $date2 = strtotime($res[15]);   
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -330,7 +338,7 @@
                                 <p class="name"><?php echo $res[4]; ?></p>
                                 <p class="posted"><?php 
                                         $date1 = strtotime($res[6]);  
-                                        $date2 = strtotime($res[14]);   
+                                        $date2 = strtotime($res[15]);   
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -452,7 +460,7 @@
 		<a href="profile.php">
 			<div class="icon active">
 				<i class="fas fa-user"></i>
-				<p>Notifications</p>
+				<p>Profile</p>
 			</div>
 		</a>
 		<?php } ?>

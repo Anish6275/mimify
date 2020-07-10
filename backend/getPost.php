@@ -54,7 +54,12 @@
                 $sql .= "`uid` LIKE '{$subs[$i-1]}') ";
             }
         }
-        $sql .= "AND `id` > '{$lastNo}' LIMIT 2;";           
+        if($_POST['mature'] == '0'){
+            $sql .= "AND `id` > '{$lastNo}' AND `mature` = '0' LIMIT 2;";
+        }else{
+            $sql .= "AND `id` > '{$lastNo}' LIMIT 2;";    
+        }
+                   
         $result = mysqli_query($conn, $sql);
         $post = "";
         $finalId = 0;
@@ -107,13 +112,13 @@
             $post .= "<p class='name'>{$res[4]}</p><p class='posted'>";
             
             $date1 = strtotime($res[6]);  
-            $date2 = strtotime($res[14]);   
+            $date2 = strtotime($res[15]);   
             $diff = abs($date2 - $date1);
             $years = floor($diff / (365*60*60*24));  
             $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
             $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
-            $hours = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24) / (60*60)) - 9;  
-            $minutes = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60)/ 60) - 570;
+            $hours = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24) / (60*60));  
+            $minutes = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60)/ 60);
             $seconds = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60 - $minutes*60));
             if($days > 0){ 
                 $post .= "{$days} day ago";

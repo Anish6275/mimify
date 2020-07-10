@@ -4,6 +4,10 @@
 		include 'dbManager.php';
         $uid = $_SESSION['user'];
         $log = $_SESSION['logsession'];
+        $mature = 0;
+        if(isset($_SESSION['mature'])){
+            $mature = $_SESSION['mature'];
+        } 
         $subs = array();
 		$sql = "SELECT `subsid`, `cpost` FROM `follow` WHERE `uid` LIKE '{$uid}' LIMIT 1;";
         $result = mysqli_query($conn, $sql);
@@ -21,7 +25,6 @@
                 }   
             }
             array_push($subs,$curSubs);
-            // print_r($subs);
             $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE (";
             for($i = 1 ; $i <= sizeof($subs) ; $i++){
                 if($i != sizeof($subs)){
@@ -44,11 +47,15 @@
             }else{
                 $postNo = $cpo;
             }
-            
-            
-            $sql .= "AND `id` > '{$postNo}' LIMIT 2;";    
+            $sql .= "AND `id` > '{$postNo}' ";
+            if($mature > 0){
+                $sql .= "LIMIT 2;";  
+            }else{
+                $sql .= "AND `mature` = '0' LIMIT 2;";
+            }
+                
             // echo $subscriber;
-            // echo $sql;
+            //  echo $sql;
 
             $result = mysqli_query($conn, $sql);
            
@@ -261,14 +268,13 @@
                                 <p class="name"><?php echo $res[4]; ?></p>
                                 <p class="posted"><?php 
                                         $date1 = strtotime($res[6]);  
-                                        $date2 = strtotime($res[14]);   
+                                        $date2 = strtotime($res[15]);   
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
                                         $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
                                         $hours = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24) / (60*60));  
                                         $minutes = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60)/ 60);
-
                                         $seconds = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24 - $days*60*60*24 - $hours*60*60 - $minutes*60));  
                                         if($days > 0){ 
                                             echo $days ." day ago";
@@ -487,7 +493,7 @@
                 $.ajax({
                     url: "backend/getPost.php",
                     type: "POST",
-                    data: { uid: '<?php echo $uid; ?>' },
+                    data: { uid: '<?php echo $uid; ?>' , mature: '<?php echo $mature; ?>' },
                     success: function (data) {
                         $('#newsfeed').append(data);
                         if (data == '') {

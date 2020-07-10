@@ -3,9 +3,7 @@
     if(isset($_SESSION["admin_name"])){
         header("location:https://mimify.ml/index.php");
     }
-
     include 'dbManager.php';
-
     if(!empty($_POST["member_name"]) && !empty($_POST["member_password"])){        
         $name = $_POST["member_name"];//mysqli_real_escape_string($connect, $_POST["member_name"]);
         $password = $_POST["member_password"];//md5(mysqli_real_escape_string($connect, $_POST["member_password"]));
@@ -17,14 +15,30 @@
             $log = uniqid();
             $sql = "UPDATE `log` SET `logsession` = '{$log}' WHERE `uid` LIKE '{$row['uid']}'";  
             if(mysqli_query($conn,$sql)){
+                $mature = 1;
+                $sql = "SELECT YEAR(CURDATE()) - YEAR(`dob`) - (DATE_FORMAT(CURDATE(), '%m%d') < DATE_FORMAT(`dob`, '%m%d')) as years from `user` WHERE `uid` LIKE '{$row['uid']}';";
+                $result = mysqli_query($conn,$sql);
+                if ($result->num_rows > 0){
+                    $rowm = $result->fetch_assoc();
+                    if($rowm['years'] < '18'){
+                        $mature = 0;         
+                    }else{
+                        $mature = 1;
+                    }
+                }else{
+                    $mature = 1;
+                }
+                // $mature = $rowm['years'];
                 if(!empty($_POST["remember"])){  
                     setcookie ("member_login",$name,time()+ (10 * 365 * 24 * 60 * 60));  
                     setcookie ("member_password",$password,time()+ (10 * 365 * 24 * 60 * 60));
                     $_SESSION["user"] = $row['uid'];
                     $_SESSION["logsession"] = $log;
+                    $_SESSION["mature"] = $mature;
                 }else{  
                     $_SESSION["user"] = $row['uid'];
                     $_SESSION["logsession"] = $log;
+                    $_SESSION["mature"] = $mature;
                     if(isset($_COOKIE["member_login"])){ 
                         setcookie ("member_login","");  
                     }  

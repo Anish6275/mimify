@@ -1,14 +1,23 @@
 <?php    
     session_start();
     if((isset($_SESSION['user'])) && (isset($_SESSION['logsession']))){
-		$uid = $_SESSION['user'];
+		include 'dbManager.php';
+        $uid = $_SESSION['user'];
         $log = $_SESSION['logsession'];
+        $mature = 0;
+        if(isset($_SESSION['mature'])){
+            $mature = $_SESSION['mature'];
+        } 
         $toTag = false;
 		if (isset($_GET['tag'])) {
 		    $toTag = true;
 		}else{
     		include 'dbManager.php';
-            $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` ORDER BY `likes` DESC LIMIT 8;";
+    		if($mature == 0){
+    		    $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` WHERE `mature` = '0' ORDER BY `likes` DESC LIMIT 8;";
+    		}else{
+    		    $sql = "SELECT *, CURRENT_TIMESTAMP FROM `post` ORDER BY `likes` DESC LIMIT 8;";
+    		}
             $result = mysqli_query($conn, $sql);
             mysqli_close($conn);
 		}
@@ -113,7 +122,7 @@
                                 <p class="name"><?php echo $res[4]; ?></p>
                                 <p class="posted"><?php 
                                         $date1 = strtotime($res[6]);  
-                                        $date2 = strtotime($res[14]);  
+                                        $date2 = strtotime($res[15]);  
                                         $diff = abs($date2 - $date1);
                                         $years = floor($diff / (365*60*60*24));  
                                         $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  
@@ -343,7 +352,7 @@
                         $.ajax({
                             url: "backend/searchTag.php",
                             type: "POST",
-                            data: { data: val , uid: '<?php echo $uid; ?>' },
+                            data: { data: val , uid: '<?php echo $uid; ?>' , mature: '<?php echo $mature; ?>' },
                             success: function (data) {
                                 sTag = data.split('|');
                                 $('#tagList').html("");

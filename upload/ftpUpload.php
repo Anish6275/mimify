@@ -58,10 +58,14 @@
 			  $result = mysqli_query($conn, $sql);
 			  if ($result->num_rows > 0)
 			   	$row = $result->fetch_assoc();
+			  $mature = 0;
+			  if (isset($_POST['mature'])){
+			    $mature = 1;    
+			  } 	
               $sql = "INSERT INTO `post` 
-                            (`id`, `link`, `slink`, `uid`, `name`, `image`, `time`, `tag`, `des`, `likes`, `likeId`, `rate`, `rateId`, `save`) 
+                            (`id`, `link`, `slink`, `uid`, `name`, `image`, `time`, `tag`, `des`, `likes`, `likeId`, `rate`, `rateId`, `save`, `mature`) 
                       VALUES 
-                            (NULL, '{$cdnSource}', '{$cdn2Source}', '{$uid}', '{$row['name']}' , '{$row['image']}', CURRENT_TIMESTAMP, '{$finalTag}', '{$des}', '0', '', '0', '','');";                    
+                            (NULL, '{$cdnSource}', '{$cdn2Source}', '{$uid}', '{$row['name']}' , '{$row['image']}', CURRENT_TIMESTAMP, '{$finalTag}', '{$des}', '0', '', '0', '','', {$mature});";                    
               if(mysqli_query($conn, $sql)){
                 mysqli_close($conn);  
                 $targetDir = "uploads/"; 

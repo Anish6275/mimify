@@ -43,11 +43,11 @@
         <fieldset>
             <h2 class="fs-title">Credentials</h2>
             <h3 class="fs-subtitle">create credentials</h3>
-            <input id="uid" type="text" name="uid" placeholder="User Id" />
+            <input id="uid" type="text" name="uid" placeholder="User Id" value="" autocomplete="new-password" />
             <h6 class="f-helper" id="h-uid"></h6>
-            <input id="pass" type="password" name="pass" placeholder="Password" />
+            <input id="pass" type="password" name="pass" placeholder="Password" value="" autocomplete="off" />
             <h6 class="f-helper" id="h-pass"></h6>
-            <input id="cpass" type="password" name="cpass" placeholder="Confirm Password" />
+            <input id="cpass" type="password" name="cpass" placeholder="Confirm Password" autocomplete="off" />
             <h6 class="f-helper" id="h-cpass"></h6>
             <input type="button" name="previous" class="previous action-button" value="Previous" />
             <input id="n2" type="button" name="next" class="next action-button" value="Next" disabled />
@@ -55,10 +55,9 @@
         <fieldset>
             <h2 class="fs-title">Personal Details</h2>
             <h3 class="fs-subtitle">Final Step</h3>
-            <input type="text" name="name" placeholder="Account Name" />
-            <input type="date" name="dob" placeholder="Date of Birth" />
-            <input type="text" name="phone" placeholder="Phone" />
-            <!-- <textarea name="address" placeholder="Address"></textarea> -->
+            <input type="text" name="name" placeholder="Account Name" autocomplete="off" />
+            <input type="date" name="dob" placeholder="Date of Birth" autocomplete="off" />
+            <input type="text" name="phone" placeholder="Phone" autocomplete="off" />
             <input type="button" name="previous" class="previous action-button" value="Previous" />
             <button id="gmail">Submit</button>
         </fieldset>

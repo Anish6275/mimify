@@ -9,7 +9,11 @@
     }else{
         $t = "#" . $_POST['data'];
     }
-    $sql = "SELECT * , CURRENT_TIMESTAMP FROM `post` WHERE `tag` LIKE '{$t}%' ORDER BY `likes` DESC;";
+    if($_POST['mature'] == 0){
+        $sql = "SELECT * , CURRENT_TIMESTAMP FROM `post` WHERE `tag` LIKE '{$t}%' AND `mature` = '0' ORDER BY `likes` DESC;";
+    }else{
+        $sql = "SELECT * , CURRENT_TIMESTAMP FROM `post` WHERE `tag` LIKE '{$t}%' ORDER BY `likes` DESC;";    
+    }
     
     $result = mysqli_query($conn, $sql);
     mysqli_close($conn);
@@ -66,7 +70,7 @@
             $post .= "<p class='name'>{$res[4]}</p><p class='posted'>";
             
             $date1 = strtotime($res[6]);  
-            $date2 = strtotime($res[14]);   
+            $date2 = strtotime($res[15]);   
             $diff = abs($date2 - $date1);
             $years = floor($diff / (365*60*60*24));  
             $months = floor(($diff - $years * 365*60*60*24)/(30*60*60*24));  

@@ -4,6 +4,10 @@
 		include 'dbManager.php';
         $uid = $_SESSION['user'];
         $log = $_SESSION['logsession'];
+        $mature = 0;
+        if(isset($_SESSION['mature'])){
+            $mature = $_SESSION['mature'];
+        }
     }else{
         header("Location: https://mimify.ml/Login/");
     }
@@ -66,12 +70,13 @@
                     <textarea name="des"
                         class="bg-white rounded border border-gray-400 focus:outline-none h-32 focus:border-red-500 text-base px-4 py-2 mb-4 resize-none"
                         placeholder="Description"></textarea>
-                        
-                        <label class="md:w-2/3 block text-gray-500 font-bold">
-                        <input class="mr-2 leading-tight" type="checkbox">
-                        <span class="text-sm">18+ content</span>
-                        </label>
-                        <br>
+                        <?php if($mature != 0){ ?>
+                            <label class="md:w-2/3 block text-gray-500 font-bold">
+                                <input class="mr-2 leading-tight" name="mature" type="checkbox">
+                                <span class="text-sm">mature content</span>
+                            </label>
+                            <br>
+                        <?php } ?>
                     <button type="submit" name="uploadBtn"
                         class="text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg">Post</button>
                     <p class="text-xs text-gray-500 mt-3">It may take some time to reflect the result.</p>
